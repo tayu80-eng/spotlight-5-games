@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pronunciation Lab — A Day in the City</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6fb;margin:0;color:#202534}
+.wrap{max-width:850px;margin:auto;padding:24px}
+h1{margin-bottom:6px}.sub{color:#667085}
+.card{background:white;border-radius:18px;padding:20px;margin:18px 0;box-shadow:0 4px 18px #00000012}
+button,.option{border:0;border-radius:12px;padding:12px 16px;font-size:16px;cursor:pointer;background:#eef2ff;margin:6px}
+.listen{background:#202534;color:white}.option{display:block;width:100%;text-align:left;background:#f1f3f7}
+.option:hover{background:#e4e8f0}
+.correct{background:#d9f7df!important}.wrong{background:#ffe0e0!important}
+.feedback{font-weight:bold;margin-top:10px;min-height:24px}
+.word{font-size:30px;font-weight:700;margin:10px 0}
+.progress{font-weight:bold}
+.small{font-size:14px;color:#667085}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🎧 Pronunciation Lab</h1>
+<div class="sub">A Day in the City · Listen, choose, repeat!</div>
+
+<div class="card">
+<h2>1. 🔊 Listen & Choose</h2>
+<p>Listen carefully. Which word do you hear?</p>
+<button class="listen" onclick="speak('park')">🔊 Listen</button>
+<div>
+<button class="option" onclick="check(this,true)">A. park</button>
+<button class="option" onclick="check(this,false)">B. book</button>
+<button class="option" onclick="check(this,false)">C. shop</button>
+</div>
+<div class="feedback" id="f1"></div>
+</div>
+
+<div class="card">
+<h2>2. 🔊 Listen & Match</h2>
+<p>Listen to the word, then choose its place.</p>
+<button class="listen" onclick="speak('library')">🔊 Listen</button>
+<div>
+<button class="option" onclick="match(this,false)">A. park</button>
+<button class="option" onclick="match(this,true)">B. library</button>
+<button class="option" onclick="match(this,false)">C. cinema</button>
+</div>
+<div class="feedback" id="f2"></div>
+</div>
+
+<div class="card">
+<h2>3. 🤖 Listen & Repeat</h2>
+<p>Listen first. Then say the word aloud.</p>
+<div class="word">museum</div>
+<button class="listen" onclick="speak('museum')">🔊 Listen</button>
+<button onclick="speak('museum')">🔁 Again</button>
+<p class="small">Teacher: ask the student to repeat 2–3 times.</p>
+</div>
+
+<div class="card">
+<h2>4. 🕵️ Sound Detective</h2>
+<p>Which word has the same vowel sound as <b>sit</b>?</p>
+<button class="listen" onclick="speak('sit')">🔊 Listen</button>
+<div>
+<button class="option" onclick="detect(this,false)">A. park</button>
+<button class="option" onclick="detect(this,true)">B. big</button>
+<button class="option" onclick="detect(this,false)">C. zoo</button>
+</div>
+<div class="feedback" id="f4"></div>
+</div>
+
+<div class="card">
+<h2>5. 🏃 Pronunciation Race</h2>
+<p>Listen to each word and say it back. Get 1 point for each successful repetition.</p>
+<div class="progress" id="score">⭐ Score: 0 / 4</div>
+<div id="race"></div>
+</div>
+
+<div class="card">
+<h2>6. 🗣️ Listen → Speak</h2>
+<p>Listen to the sentence. Then say your own sentence using the same pattern.</p>
+<button class="listen" onclick="speak('I go to the park on Saturday.')">🔊 Listen</button>
+<p><b>Pattern:</b> I go to the ______ on Saturday.</p>
+<p class="small">Examples: school · library · cinema · zoo</p>
+</div>
+
+</div>
+
+<script>
+function speak(text){
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-GB';
+  u.rate=0.85;
+  speechSynthesis.speak(u);
+}
+function feedback(id,msg,ok){
+  const el=document.getElementById(id);
+  el.textContent=msg;
+  el.style.color=ok?'#16803c':'#c62828';
+}
+function check(btn,ok){
+  btn.classList.add(ok?'correct':'wrong');
+  feedback('f1',ok?'✅ Correct! Great listening!':'❌ Try again. Listen once more.',ok);
+}
+function match(btn,ok){
+  btn.classList.add(ok?'correct':'wrong');
+  feedback('f2',ok?'✅ Correct!':'❌ Listen again.',ok);
+}
+function detect(btn,ok){
+  btn.classList.add(ok?'correct':'wrong');
+  feedback('f4',ok?'🎯 Detective solved it!':'❌ Not this one. Listen again.',ok);
+}
+const words=['school','library','shop','zoo'];
+let score=0;
+const race=document.getElementById('race');
+words.forEach((w,i)=>{
+  const b=document.createElement('button');
+  b.className='listen';
+  b.textContent='🔊 '+w;
+  b.onclick=()=>{
+    speak(w);
+    if(!b.dataset.done){
+      b.dataset.done='1';
+      score++;
+      document.getElementById('score').textContent=`⭐ Score: ${score} / 4`;
+    }
+  };
+  race.appendChild(b);
+});
+</script>
+</body>
+</html>
