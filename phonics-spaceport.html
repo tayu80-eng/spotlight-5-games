@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phonics Spaceport: Open & Closed Syllables</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #e6eeff;
+        padding: 16px;
+        position: relative;
+        overflow-x: hidden;
+        background:
+            radial-gradient(ellipse at 15% 15%, rgba(120, 40, 200, 0.55), transparent 55%),
+            radial-gradient(ellipse at 85% 20%, rgba(0, 130, 255, 0.5), transparent 55%),
+            radial-gradient(ellipse at 50% 90%, rgba(255, 60, 140, 0.35), transparent 60%),
+            radial-gradient(ellipse at 75% 75%, rgba(0, 220, 200, 0.3), transparent 55%),
+            radial-gradient(circle at 50% 50%, #101a3a 0%, #05071a 55%, #01020a 100%);
+        background-attachment: fixed;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+            radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+            radial-gradient(2px 2px at 120px 80px, #cfe4ff, transparent),
+            radial-gradient(1.5px 1.5px at 200px 150px, #fff, transparent),
+            radial-gradient(1.5px 1.5px at 320px 60px, #ffe9b0, transparent),
+            radial-gradient(2px 2px at 420px 200px, #fff, transparent),
+            radial-gradient(1.5px 1.5px at 80px 250px, #bcd4ff, transparent),
+            radial-gradient(2px 2px at 260px 320px, #fff, transparent),
+            radial-gradient(1.5px 1.5px at 500px 350px, #ffd6f0, transparent),
+            radial-gradient(1.5px 1.5px at 150px 420px, #fff, transparent),
+            radial-gradient(2px 2px at 380px 460px, #cfe4ff, transparent);
+        background-size: 550px 500px;
+        background-repeat: repeat;
+        opacity: 0.85;
+        pointer-events: none;
+        animation: twinkle 6s ease-in-out infinite alternate;
+        z-index: 0;
+    }
+
+    @keyframes twinkle {
+        0%   { opacity: 0.55; }
+        100% { opacity: 1; }
+    }
+
+    .game-container {
+        position: relative;
+        z-index: 2;
+        background: rgba(8, 16, 36, 0.72);
+        backdrop-filter: blur(10px);
+        border: 2px solid #4a7fd4;
+        border-radius: 32px;
+        padding: 26px 24px;
+        max-width: 700px;
+        width: 100%;
+        box-shadow:
+            0 0 60px rgba(0, 140, 255, 0.35),
+            inset 0 0 40px rgba(80, 160, 255, 0.08);
+    }
+
+    h1 {
+        font-size: 1.6rem;
+        text-align: center;
+        color: #b7d6ff;
+        text-shadow: 0 0 18px #3f8eff, 0 0 40px #1a5eff;
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 0.92rem;
+        color: #8fb4e8;
+        margin-bottom: 14px;
+    }
+
+    .stats {
+        display: flex;
+        justify-content: space-between;
+        background: #0b162c;
+        padding: 11px 20px;
+        border-radius: 60px;
+        border: 1px solid #2e5288;
+        margin-bottom: 16px;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .stat-item { display: flex; align-items: center; gap: 8px; }
+
+    .progress-bar {
+        width: 100%;
+        height: 12px;
+        background: #0e1b2e;
+        border-radius: 20px;
+        margin-bottom: 18px;
+        border: 1px solid #264b7a;
+        overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #00c6ff, #7a5cff, #ff4fd8);
+        border-radius: 20px;
+        transition: width 0.3s ease;
+        box-shadow: 0 0 14px #00c6ff;
+    }
+
+    .word-scene {
+        width: 100%;
+        max-width: 550px;
+        height: auto;
+        aspect-ratio: 3 / 2;
+        object-fit: contain;
+        border-radius: 22px;
+        background: #101a3a;
+        margin: 0 auto 10px;
+        display: block;
+        filter: drop-shadow(0 0 22px rgba(80, 160, 255, 0.55));
+        animation: floatScene 6s ease-in-out infinite;
+    }
+    @keyframes floatScene {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-6px); }
+    }
+
+    .vowel-badge {
+        background: #1c3760;
+        border: 3px solid #4a8fff;
+        color: #9fd0ff;
+        font-size: 1.9rem;
+        font-weight: 900;
+        width: 72px;
+        height: 72px;
+        text-align: center;
+        border-radius: 50%;
+        margin: 0 auto 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 34px #2f7eff, inset 0 0 20px #2f7eff55;
+    }
+
+    .word-display {
+        text-align: center;
+        font-size: 2.7rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: #fff;
+        text-shadow: 0 0 26px #4a9eff, 0 0 50px #2f6eff;
+        margin-bottom: 4px;
+        word-break: break-word;
+    }
+
+    .word-translation {
+        text-align: center;
+        font-size: 1rem;
+        color: #a8c4ff;
+        margin-bottom: 6px;
+        font-style: italic;
+    }
+
+    .transcription-hint {
+        text-align: center;
+        font-size: 1.1rem;
+        color: #9fc4ff;
+        margin-bottom: 14px;
+        min-height: 22px;
+    }
+
+    .question-label {
+        text-align: center;
+        font-size: 1.1rem;
+        color: #cfe2ff;
+        margin-bottom: 14px;
+        font-weight: 600;
+    }
+
+    .answers-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .answer-btn {
+        background: #16273f;
+        border: 2px solid #2e5a9a;
+        color: #e0e9ff;
+        padding: 16px 12px;
+        border-radius: 18px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: center;
+        line-height: 1.3;
+    }
+    .answer-btn small {
+        display: block;
+        font-weight: 400;
+        font-size: 0.85rem;
+        color: #9fc4ff;
+        margin-top: 6px;
+    }
+    .answer-btn:hover:not(:disabled) {
+        background: #1f3a60;
+        border-color: #5f9eff;
+        transform: scale(1.03);
+        box-shadow: 0 0 22px #2f6eff;
+    }
+    .answer-btn.correct {
+        background: #1a5e2a;
+        border-color: #3ff07a;
+        box-shadow: 0 0 26px #2fdb6b;
+    }
+    .answer-btn.wrong {
+        background: #5e1a1a;
+        border-color: #ff4f4f;
+        box-shadow: 0 0 22px #ff3f3f;
+    }
+    .answer-btn:disabled { opacity: 0.75; cursor: not-allowed; transform: none; }
+
+    .feedback {
+        min-height: 50px;
+        font-size: 1.02rem;
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        color: #b1d4ff;
+    }
+
+    .next-btn {
+        background: linear-gradient(135deg, #0072ff, #7a5cff, #ff4fd8);
+        border: none;
+        color: #fff;
+        font-weight: bold;
+        font-size: 1.15rem;
+        padding: 16px 24px;
+        border-radius: 60px;
+        width: 100%;
+        cursor: pointer;
+        transition: 0.2s;
+        box-shadow: 0 0 26px #0072ff90;
+        display: none;
+    }
+    .next-btn:hover { filter: brightness(1.15); transform: scale(1.02); }
+
+    .restart-btn {
+        background: #2e4e7a;
+        border: none;
+        color: #fff;
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding: 14px 24px;
+        border-radius: 60px;
+        width: 100%;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-top: 12px;
+        display: none;
+    }
+    .restart-btn:hover { background: #3f6ec4; }
+
+    .final-message { text-align: center; padding: 10px 0; }
+    .final-message h2 {
+        font-size: 1.9rem;
+        color: #ffd966;
+        text-shadow: 0 0 22px #ffb800;
+        margin-bottom: 12px;
+    }
+
+    .rule-reminder {
+        background: #0d1b30;
+        border-left: 5px solid #4a8fff;
+        padding: 11px 16px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        color: #b9d3ff;
+        margin-bottom: 16px;
+        line-height: 1.5;
+    }
+    .rule-reminder b { color: #ffd966; }
+
+    @media (max-width: 500px) {
+        .answers-grid { grid-template-columns: 1fr; }
+        h1 { font-size: 1.2rem; }
+        .word-display { font-size: 2rem; }
+        .word-scene { height: auto; }
+    }
+button:focus-visible { outline: 3px solid #ffd966; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* Compact viewport layout: illustration and controls share one screen. */
+body { padding: 8px; height: 100svh; min-height: 0; align-items: center; }
+.game-container { max-width: 1050px; max-height: calc(100svh - 16px); padding: 14px 18px; border-radius: 24px; display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); column-gap: 22px; align-items: center; }
+h1, .subtitle, .stats, .progress-bar { grid-column: 1 / -1; }
+h1 { font-size: 1.35rem; margin: 0; }
+.subtitle { margin: 2px 0 8px; font-size: .82rem; }
+.stats { padding: 7px 14px; margin-bottom: 7px; font-size: .92rem; }
+.progress-bar { height: 7px; margin-bottom: 10px; }
+.word-scene { grid-column: 1; grid-row: 5 / 11; width: 100%; max-width: none; max-height: calc(100svh - 140px); margin: 0; animation: none; }
+.rule-reminder { grid-column: 2; grid-row: 5; padding: 6px 10px; margin: 0 0 7px; font-size: .78rem; position: relative; }
+.rule-reminder summary { cursor: pointer; font-weight: 700; }
+.rule-content { position: absolute; z-index: 5; top: 100%; left: 0; right: 0; background: #0d1b30; border: 1px solid #4a8fff; border-radius: 10px; padding: 12px; box-shadow: 0 8px 25px #0009; }
+.word-info { grid-column: 2; grid-row: 6; position: relative; text-align: center; }
+.vowel-badge { width: 38px; height: 38px; font-size: 1.25rem; border-width: 2px; margin: 0 auto 3px; }
+.word-display { font-size: 2rem; line-height: 1.1; margin: 0; }
+.word-translation { font-size: .9rem; margin: 2px 0; }
+.transcription-hint { font-size: .95rem; min-height: 19px; margin: 0; }
+.question-label { grid-column: 2; grid-row: 7; font-size: .95rem; margin: 6px 0; }
+.answers-grid { grid-column: 2; grid-row: 8; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; }
+.answer-btn { padding: 10px 7px; font-size: 1.05rem; border-radius: 12px; }
+.answer-btn small { font-size: .7rem; margin-top: 3px; }
+.feedback { grid-column: 2; grid-row: 9; font-size: .83rem; min-height: 44px; margin: 7px 0 4px; line-height: 1.3; }
+.next-btn, .restart-btn { grid-column: 2; grid-row: 10; padding: 10px 14px; font-size: .95rem; margin: 0; }
+@media (max-width: 620px) and (orientation: portrait) {
+ .game-container { display: flex; flex-direction: column; gap: 0; padding: 10px 12px; max-width: 480px; width: 100%; }
+ h1 { font-size: 1.08rem; }
+ .subtitle { font-size: .72rem; margin-bottom: 6px; }
+ .stats, .progress-bar, .rule-reminder, .word-info, .answers-grid, .next-btn, .restart-btn { width: 100%; }
+ .stats { font-size: .82rem; margin-bottom: 5px; padding: 6px 10px; }
+ .progress-bar { margin-bottom: 7px; flex-shrink: 0; }
+ .word-scene { width: auto; max-width: 100%; height: min(28svh, 230px); max-height: none; aspect-ratio: 3 / 2; margin: 0 auto 6px; flex-shrink: 1; min-height: 70px; }
+ .rule-reminder { padding: 5px 9px; margin-bottom: 5px; }
+ .word-info { padding-left: 45px; min-height: 70px; }
+ .vowel-badge { position: absolute; left: 4px; top: 12px; margin: 0; }
+ .word-display { font-size: 1.8rem; }
+ .question-label { font-size: .85rem; margin: 4px 0 6px; }
+ .answer-btn { padding: 9px 6px; min-height: 54px; }
+ .feedback { width: 100%; min-height: 38px; font-size: .78rem; margin: 5px 0 4px; }
+ .next-btn, .restart-btn { min-height: 40px; padding: 9px 12px; }
+}
+@media (max-height: 650px) and (orientation: portrait) {
+ .word-scene { height: 23svh; }
+ .game-container { padding: 7px 10px; }
+ .subtitle { margin-bottom: 4px; }
+ .word-info { min-height: 61px; }
+ .word-display { font-size: 1.55rem; }
+ .answer-btn { padding: 6px; min-height: 47px; }
+ .feedback { min-height: 34px; font-size: .72rem; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+ .game-container { padding: 7px 12px; column-gap: 14px; }
+ h1 { font-size: 1rem; } .subtitle { display: none; }
+ .stats { margin: 4px 0; padding: 4px 12px; font-size: .8rem; }
+ .progress-bar { margin-bottom: 5px; height: 5px; }
+ .word-scene { max-height: calc(100svh - 85px); }
+ .rule-reminder { padding: 3px 8px; margin-bottom: 2px; font-size: .7rem; }
+ .word-info { padding-left: 40px; }
+ .vowel-badge { position: absolute; left: 0; top: 5px; width: 32px; height: 32px; }
+ .word-display { font-size: 1.5rem; } .word-translation { font-size: .8rem; }
+ .transcription-hint { min-height: 16px; font-size: .8rem; }
+ .question-label { margin: 3px 0; font-size: .8rem; }
+ .answer-btn { padding: 5px; font-size: .95rem; }
+ .answer-btn small { font-size: .65rem; }
+ .feedback { min-height: 30px; margin: 4px 0; font-size: .7rem; }
+ .next-btn, .restart-btn { padding: 7px 10px; font-size: .8rem; }
+}
+
+
+.answer-btn { touch-action: manipulation; }
+#fireworks { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
+</style>
+</head>
+<body>
+<canvas id="fireworks" aria-hidden="true"></canvas>
+<div class="game-container" id="game">
+    <h1>🚀 PHONICS SPACEPORT</h1>
+    <div class="subtitle">Открытый и закрытый слог: A, E, O, U</div>
+
+    <div class="stats">
+        <div class="stat-item">⭐ Очки: <span id="scoreDisplay">0</span></div>
+        <div class="stat-item">🪐 Слово: <span id="wordCounter">1</span>/<span id="totalWords">0</span></div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <img class="word-scene" id="wordScene" alt="" />
+
+    <details class="rule-reminder"><summary>📖 Правило чтения</summary><div class="rule-content">
+        <b>Открытый слог и слова с немой e</b> — в этих примерах гласная читается как в алфавите:
+        <b>A</b> /eɪ/ (name), <b>E</b> /iː/ (he), <b>O</b> /əʊ/ (go), <b>U</b> /juː/ (use).<br>
+        <b>Закрытый слог</b> — гласная краткая:
+        <b>A</b> /æ/ (cat), <b>E</b> /e/ (pen), <b>O</b> /ɒ/ (dog), <b>U</b> /ʌ/ (cup).
+    </div></details>
+
+    <div class="word-info"><div class="vowel-badge" id="vowelBadge">A</div>
+    <div class="word-display" id="wordDisplay">word</div>
+    <div class="word-translation" id="wordTranslation"></div>
+    <div class="transcription-hint" id="transcriptionHint"></div>
+
+    </div><div class="question-label" id="questionLabel">Какой это слог?</div>
+
+    <div class="answers-grid" id="answersContainer"></div>
+
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+
+    <button class="next-btn" id="nextBtn">➡️ Следующее слово</button>
+    <button class="restart-btn" id="restartBtn">🔄 Играть снова</button>
+</div>
+
+<script>
+const ILLUSTRATIONS = {"name": "phonics-assets/name.webp", "cat": "phonics-assets/cat.webp", "game": "phonics-assets/game.webp", "map": "phonics-assets/map.webp", "cake": "phonics-assets/cake.webp", "bag": "phonics-assets/bag.webp", "plane": "phonics-assets/plane.webp", "hand": "phonics-assets/hand.webp", "he": "phonics-assets/he.webp", "pen": "phonics-assets/pen.webp", "we": "phonics-assets/we.webp", "ten": "phonics-assets/ten.webp", "go": "phonics-assets/go.webp", "dog": "phonics-assets/dog.webp", "home": "phonics-assets/home.webp", "box": "phonics-assets/box.webp", "use": "phonics-assets/use.webp", "cup": "phonics-assets/cup.webp", "cube": "phonics-assets/cube.webp", "sun": "phonics-assets/sun.webp", "table": "phonics-assets/table.webp", "victory": "phonics-assets/victory.webp"};
+
+const words = [
+['name','A','open','/neɪm/','имя','name'],['cat','A','closed','/kæt/','кот','cat'],
+['game','A','open','/ɡeɪm/','игра','game'],['map','A','closed','/mæp/','карта','map'],
+['cake','A','open','/keɪk/','торт','cake'],['bag','A','closed','/bæɡ/','сумка','bag'],
+['plane','A','open','/pleɪn/','самолёт','plane'],['hand','A','closed','/hænd/','рука','hand'],
+['he','E','open','/hiː/','он','he'],['pen','E','closed','/pen/','ручка','pen'],
+['we','E','open','/wiː/','мы','we'],['ten','E','closed','/ten/','десять','ten'],
+['go','O','open','/ɡəʊ/','идти','🚶'],['dog','O','closed','/dɒɡ/','собака','🐶'],
+['home','O','open','/həʊm/','дом','🏠'],['box','O','closed','/bɒks/','коробка','📦'],
+['use','U','open','/juːz/','использовать','🛠️'],['cup','U','closed','/kʌp/','чашка','☕'],
+['cube','U','open','/kjuːb/','куб','🧊'],['sun','U','closed','/sʌn/','солнце','☀️'],
+['table','A','open','/ˈteɪbl/','стол','table']
+].map(([word,vowel,type,transcription,translation,picture])=>({word,vowel,type,transcription,translation,picture}));
+let currentIndex=0, score=0, answered=false;
+const $=id=>document.getElementById(id);
+const sounds={A:['/eɪ/','/æ/'],E:['/iː/','/e/'],O:['/əʊ/','/ɒ/'],U:['/juː/','/ʌ/']};
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function loadWord(){
+ answered=false; document.querySelector('details').open=false; const w=words[currentIndex];
+ $('wordDisplay').textContent=w.word; $('vowelBadge').textContent=w.vowel;
+ $('wordTranslation').textContent=w.translation; $('transcriptionHint').textContent='';
+ $('wordScene').src=ILLUSTRATIONS[w.word]; $('wordScene').alt=w.translation+' — космическая иллюстрация';
+ $('wordCounter').textContent=currentIndex+1; $('totalWords').textContent=words.length;
+ $('scoreDisplay').textContent=score; $('feedback').textContent='';
+ $('questionLabel').textContent=`Как читается буква ${w.vowel} в этом слове?`;
+ $('nextBtn').style.display='none'; $('restartBtn').style.display='none';
+ $('progressFill').style.width=(currentIndex/words.length*100)+'%';
+ $('answersContainer').innerHTML='';
+ ['open','closed'].forEach((type,i)=>{const b=document.createElement('button');b.className='answer-btn';b.dataset.type=type;
+ b.innerHTML=`${sounds[w.vowel][i]}<small>${type==='open'?'Открытый слог / немая e':'Закрытый слог'}</small>`;
+ b.onpointerdown=e=>{if(e.isPrimary!==false&&e.button===0)answer(type,b);};
+ b.onclick=()=>answer(type,b);$('answersContainer').append(b);});
+}
+function answer(type,b){if(answered)return;playAnswerClick();answered=true;const w=words[currentIndex],ok=type===w.type;
+ if(ok)score+=10;
+ document.querySelectorAll('.answer-btn').forEach(x=>{x.disabled=true;if(x.dataset.type===w.type)x.classList.add('correct');});
+ if(!ok)b.classList.add('wrong');
+ $('scoreDisplay').textContent=score;$('transcriptionHint').textContent=w.transcription;
+ $('feedback').textContent=(ok?'✅ Верно! +10 очков. ':'💡 Запомни: ')+`${w.word} — ${w.transcription}. Буква ${w.vowel} читается ${sounds[w.vowel][w.type==='open'?0:1]}.`;
+ $('nextBtn').textContent=currentIndex===words.length-1?'🏆 Результат':'➡️ Следующее слово';$('nextBtn').style.display='block';
+ $('progressFill').style.width=((currentIndex+1)/words.length*100)+'%';
+}
+function showFinalScreen(){
+ celebrate();
+ $('answersContainer').innerHTML='';$('wordScene').src=ILLUSTRATIONS.victory; $('wordScene').alt='Космонавт с кубком, ракета и праздничный салют';
+ $('wordDisplay').textContent='Mission complete!';$('wordTranslation').textContent='Все слова пройдены!';
+ $('transcriptionHint').textContent='';$('vowelBadge').textContent='★';$('questionLabel').textContent=`Твой счёт: ${score} из ${words.length*10}`;
+ $('feedback').textContent=score===words.length*10?'🌟 Perfect! Ты — мастер фонетики!':'✨ Great job! Повтори слова и попробуй улучшить результат.';
+ $('nextBtn').style.display='none';$('restartBtn').style.display='block';
+}
+$('nextBtn').onclick=()=>{if(!answered)return;if(currentIndex<words.length-1){currentIndex++;loadWord();}else showFinalScreen();};
+$('restartBtn').onclick=()=>{stopCelebration();currentIndex=0;score=0;
+
+shuffle(words);loadWord();};
+let fireworksFrame=0, celebrationTimer=0, audioContext=null, celebrationNodes=[];
+function stopCelebration(){
+ cancelAnimationFrame(fireworksFrame); clearTimeout(celebrationTimer);
+ const canvas=$('fireworks'); const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);
+ celebrationNodes.forEach(n=>{try{n.stop();}catch(e){}}); celebrationNodes=[];
+}
+function prepareAudio(){
+ try {
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(AC&&(!audioContext||audioContext.state==='closed'))audioContext=new AC({latencyHint:'interactive'});
+  return audioContext;
+ } catch(e){return null;}
+}
+function unlockAudio(){
+ const ac=prepareAudio();
+ if(ac&&ac.state!=='running')ac.resume().catch(()=>{});
+}
+let spaceClickBuffer=null;
+function prepareSpaceClick(ac){
+ if(spaceClickBuffer)return;
+ const duration=.46,length=Math.ceil(ac.sampleRate*duration);
+ spaceClickBuffer=ac.createBuffer(1,length,ac.sampleRate);
+ const data=spaceClickBuffer.getChannelData(0);
+ const notes=[[1174.66,0,.068],[1567.98,.065,.052],[2093,.13,.037]];
+ for(let i=0;i<length;i++){
+  const t=i/ac.sampleRate;
+  let sample=0;
+  for(const [frequency,delay,volume] of notes){
+   const age=t-delay;
+   if(age<0||age>.30)continue;
+   const attack=Math.min(1,age/.012);
+   const tail=Math.min(1,(.30-age)/.04);
+   const envelope=attack*Math.exp(-age*13)*tail;
+   sample+=volume*envelope*(Math.sin(2*Math.PI*frequency*age)+.12*Math.sin(2*Math.PI*frequency*2*age));
+  }
+  data[i]=sample;
+ }
+}
+function playAnswerClick(){
+ try {
+  const ac=prepareAudio();if(!ac)return;
+  if(ac.state!=='running')ac.resume().catch(()=>{});
+  prepareSpaceClick(ac);
+  const source=ac.createBufferSource();source.buffer=spaceClickBuffer;
+  source.connect(ac.destination);
+  source.onended=()=>source.disconnect();source.start(ac.currentTime);
+ } catch(e) {}
+}
+function playFirework(delay){
+ if(!audioContext)return;
+ const ac=audioContext, t=ac.currentTime+delay;
+ // Gentle rising whistle followed by a soft burst of filtered noise.
+ const whistle=ac.createOscillator(), wg=ac.createGain();
+ whistle.type='sine';whistle.frequency.setValueAtTime(420,t);whistle.frequency.exponentialRampToValueAtTime(1050,t+.35);
+ wg.gain.setValueAtTime(0,t);wg.gain.linearRampToValueAtTime(.025,t+.05);wg.gain.exponentialRampToValueAtTime(.001,t+.4);
+ whistle.connect(wg);wg.connect(ac.destination);whistle.start(t);whistle.stop(t+.42);celebrationNodes.push(whistle);
+ const length=Math.floor(ac.sampleRate*.65), buffer=ac.createBuffer(1,length,ac.sampleRate), data=buffer.getChannelData(0);
+ for(let i=0;i<length;i++)data[i]=Math.random()*2-1;
+ const noise=ac.createBufferSource(), filter=ac.createBiquadFilter(), gain=ac.createGain();noise.buffer=buffer;
+ filter.type='lowpass';filter.frequency.value=1700;
+ gain.gain.setValueAtTime(.12,t+.4);gain.gain.exponentialRampToValueAtTime(.001,t+1.03);
+ noise.connect(filter);filter.connect(gain);gain.connect(ac.destination);noise.start(t+.4);noise.stop(t+1.05);celebrationNodes.push(noise);
+}
+function celebrate(){
+ stopCelebration();
+ try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){audioContext=audioContext||new AC();audioContext.resume();for(let i=0;i<7;i++)playFirework(i*.65);}}catch(e){}
+ const canvas=$('fireworks'),ctx=canvas.getContext('2d');if(!ctx)return;
+ const dpr=Math.min(window.devicePixelRatio||1,2), width=window.innerWidth,height=window.innerHeight;
+ canvas.width=width*dpr;canvas.height=height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ let particles=[],start=performance.now(),last=start,nextBurst=0;
+ const colors=['#ffd966','#ff73d8','#76d9ff','#b797ff','#8fffba'];
+ function burst(){const x=width*(.15+Math.random()*.7),y=height*(.12+Math.random()*.4),color=colors[Math.floor(Math.random()*colors.length)];
+ for(let i=0;i<65;i++){const angle=Math.random()*Math.PI*2,speed=50+Math.random()*150;particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:1.3+Math.random()*.7,max:2,color});}}
+ function frame(now){const elapsed=(now-start)/1000,dt=Math.min((now-last)/1000,.05);last=now;ctx.clearRect(0,0,width,height);
+ if(elapsed>=nextBurst&&elapsed<4.3){burst();nextBurst+=.65;}
+ particles=particles.filter(p=>p.life>0);
+ for(const p of particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=65*dt;ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,2.4,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;
+ if(elapsed<6.5)fireworksFrame=requestAnimationFrame(frame);else stopCelebration();}
+ if(!reduced)fireworksFrame=requestAnimationFrame(frame);
+ celebrationTimer=setTimeout(stopCelebration,7000);
+}
+window.addEventListener('pagehide',stopCelebration);
+try{const ac=prepareAudio();if(ac)prepareSpaceClick(ac);}catch(e){}
+window.addEventListener('pointerdown',unlockAudio,{capture:true,passive:true});
+window.addEventListener('keydown',unlockAudio,{capture:true});
+shuffle(words);loadWord();
+</script></body></html>
