@@ -414,7 +414,7 @@ h1 { font-size: 1.35rem; margin: 0; }
 </div>
 
 <script>
-const ILLUSTRATIONS = {"name": "phonics-assets/name.webp", "cat": "phonics-assets/cat.webp", "game": "phonics-assets/game.webp", "map": "phonics-assets/map.webp", "cake": "phonics-assets/cake.webp", "bag": "phonics-assets/bag.webp", "plane": "phonics-assets/plane.webp", "hand": "phonics-assets/hand.webp", "he": "phonics-assets/he.webp", "pen": "phonics-assets/pen.webp", "we": "phonics-assets/we.webp", "ten": "phonics-assets/ten.webp", "go": "phonics-assets/go.webp", "dog": "phonics-assets/dog.webp", "home": "phonics-assets/home.webp", "box": "phonics-assets/box.webp", "use": "phonics-assets/use.webp", "cup": "phonics-assets/cup.webp", "cube": "phonics-assets/cube.webp", "sun": "phonics-assets/sun.webp", "table": "phonics-assets/table.webp", "victory": "phonics-assets/victory.webp"};
+const ILLUSTRATIONS = {"name": "phonics-assets/name.webp", "cat": "phonics-assets/cat.webp", "game": "phonics-assets/game.webp", "map": "phonics-assets/map.webp", "cake": "phonics-assets/cake.webp", "bag": "phonics-assets/bag.webp", "plane": "phonics-assets/plane.webp", "hand": "phonics-assets/hand.webp", "he": "phonics-assets/he.webp", "pen": "phonics-assets/pen.webp", "we": "phonics-assets/we.webp", "ten": "phonics-assets/ten.webp", "go": "phonics-assets/go.webp", "dog": "phonics-assets/dog.webp", "home": "phonics-assets/home.webp", "box": "phonics-assets/box.webp", "use": "phonics-assets/use.webp", "cup": "phonics-assets/cup.webp", "cube": "phonics-assets/cube.webp", "sun": "phonics-assets/sun.webp", "cap": "phonics-assets/cap.webp", "victory": "phonics-assets/victory.webp"};
 
 const words = [
 ['name','A','open','/neɪm/','имя','name'],['cat','A','closed','/kæt/','кот','cat'],
@@ -427,7 +427,7 @@ const words = [
 ['home','O','open','/həʊm/','дом','🏠'],['box','O','closed','/bɒks/','коробка','📦'],
 ['use','U','open','/juːz/','использовать','🛠️'],['cup','U','closed','/kʌp/','чашка','☕'],
 ['cube','U','open','/kjuːb/','куб','🧊'],['sun','U','closed','/sʌn/','солнце','☀️'],
-['table','A','open','/ˈteɪbl/','стол','table']
+['cap','A','closed','/kæp/','кепка','cap']
 ].map(([word,vowel,type,transcription,translation,picture])=>({word,vowel,type,transcription,translation,picture}));
 let currentIndex=0, score=0, answered=false;
 const $=id=>document.getElementById(id);
